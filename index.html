@@ -17,6 +17,18 @@
   #e{min-height:20px;font-size:13px;color:#b8352f}
   #view{position:fixed;inset:0;width:100%;height:100%;border:0;display:block;background:#f6f3ec}
 </style>
+<!-- PWA -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#f6f3ec">
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(function (error) {
+      console.warn('도쿄 동선 서비스 워커 등록 실패', error);
+    });
+  }
+</script>
+<!-- /PWA -->
 </head>
 <body>
 <div id="lock">
