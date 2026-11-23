@@ -19,14 +19,64 @@
 </style>
 <!-- PWA -->
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="theme-color" content="#f6f3ec">
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(function (error) {
-      console.warn('도쿄 동선 서비스 워커 등록 실패', error);
-    });
+<style>
+  #tt-install {
+    position: fixed;
+    z-index: 10;
+    bottom: max(16px, env(safe-area-inset-bottom));
+    left: 50%;
+    transform: translateX(-50%);
+    background: #c8412f;
+    border-color: #c8412f;
+    border-radius: 24px;
+    min-height: 44px;
+    padding: 8px 20px;
+    white-space: nowrap;
   }
+</style>
+<script>
+  (function () {
+    var installPrompt;
+    var button = document.createElement('button');
+    button.id = 'tt-install';
+    button.type = 'button';
+    button.textContent = '앱 설치';
+    button.hidden = true;
+
+    document.addEventListener('DOMContentLoaded', function () {
+      document.body.appendChild(button);
+    }, { once: true });
+
+    window.addEventListener('beforeinstallprompt', function (event) {
+      event.preventDefault();
+      installPrompt = event;
+      button.hidden = false;
+    });
+
+    button.addEventListener('click', function () {
+      if (!installPrompt) return;
+      var promptEvent = installPrompt;
+      installPrompt = null;
+      button.hidden = true;
+      promptEvent.prompt().catch(function (error) {
+        console.warn('도쿄 동선 앱 설치 요청 실패', error);
+      });
+    });
+
+    window.addEventListener('appinstalled', function () {
+      installPrompt = null;
+      button.hidden = true;
+    });
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(function (error) {
+        console.warn('도쿄 동선 서비스 워커 등록 실패', error);
+      });
+    }
+  })();
 </script>
 <!-- /PWA -->
 </head>
